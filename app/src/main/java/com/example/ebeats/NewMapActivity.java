@@ -11,6 +11,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
@@ -44,28 +45,42 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        PolygonOptions polygonOptions = new PolygonOptions().clickable(true);
         PolylineOptions polylineOptions = new PolylineOptions().clickable(true);
         // Add a marker in Sydney and move the camera
         // LatLng sydney = new LatLng(-34, 151);
         // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-        ArrayList<ArrayList<Double>> result = (ArrayList<ArrayList<Double>>) getIntent().getExtras().get("Coords");
-
-        ArrayList<LatLng> coords = new ArrayList<>();
-
+        
+        // Getting data from previous activity
+        ArrayList<ArrayList<Double>> result = (ArrayList<ArrayList<Double>>) getIntent().getExtras().get("tripCoords");
+        ArrayList<ArrayList<Double>> geofence = (ArrayList<ArrayList<Double>>) getIntent().getExtras().get("Geofence");
+        
+        ArrayList<LatLng> tripCoords = new ArrayList<>();
+        ArrayList<LatLng> geofenceCoords = new ArrayList<>();
+        
         Iterator<ArrayList<Double>> iterator = result.iterator();
 
         while (iterator.hasNext()) {
             ArrayList<Double> next = iterator.next();
             //Log.d("main",next.get(1)+" "+next.get(0));
-            coords.add(new LatLng(next.get(1), next.get(0)));
+            tripCoords.add(new LatLng(next.get(1), next.get(0)));
             polylineOptions.add(new LatLng(next.get(1), next.get(0)));
         }
 
-        Log.e("TAG",coords.toString());
+        if (geofence == null) {
+            Log.d("GEOFENCE", "onMapReady: OH NO NULLLL");
+        }
 
+        for(ArrayList<Double> coord : geofence) {
+            polygonOptions.add(new LatLng(coord.get(1), coord.get(0)));
+        }
 
+        Log.e("TAG",tripCoords.toString());
+
+        Log.d("GEOFENCE", "onMapReady: " + geofence.get(0));
 //                new LatLng(-35.016, 143.321),
 //                new LatLng(-34.747, 145.592),
 //                new LatLng(-34.364, 147.891),
@@ -73,14 +88,18 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
 //                new LatLng(-32.306, 149.248),
 //                new LatLng(-32.491, 147.309)
         mMap.addPolyline(polylineOptions);
-        mMap.addMarker(new MarkerOptions().position(coords.get(coords.size()-1)));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(coords.get(coords.size()-1)));
+
+        mMap.addMarker(new MarkerOptions().position(tripCoords.get(tripCoords.size()-1)));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(tripCoords.get(tripCoords.size()-1)));
         CameraPosition campos=new CameraPosition.Builder()
-            .target(coords.get(coords.size()-1))
+            .target(tripCoords.get(tripCoords.size()-1))
                 .zoom(17F)
                 .bearing(90)
                 .tilt(40)
                 .build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(campos));
+
+        polygonOptions.fillColor(R.color.red);
+        mMap.addPolygon(polygonOptions);
     }
 }

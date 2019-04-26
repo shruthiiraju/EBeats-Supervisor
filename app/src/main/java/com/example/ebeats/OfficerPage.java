@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.primitives.Doubles;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -39,6 +40,9 @@ public class OfficerPage extends AppCompatActivity {
     private String uid;
     private Button button;
     private ArrayList<ArrayList<Double>> result = new ArrayList<ArrayList<Double>>();
+    private ArrayList<ArrayList<Double>> geofenceBundle = new ArrayList<ArrayList<Double>>();
+    private ArrayList<ArrayList<Double>> BeatPointBundle = new ArrayList<ArrayList<Double>>();
+
 
 
     @Override
@@ -124,8 +128,10 @@ public class OfficerPage extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(OfficerPage.this, NewMapActivity.class);
 
-                intent.putExtra("Coords", result);
-                Log.e("COORDS", result.toString());
+                intent.putExtra("tripCoords", result);
+                intent.putExtra("Geofence", geofenceBundle);
+
+                Log.e("COORDS", geofenceBundle.toString());
 
 
                 if(result.size()==0){
@@ -239,7 +245,202 @@ public class OfficerPage extends AppCompatActivity {
             });
         }
 
+        String url = "https://api.geospark.co/v1/api/geofence/?tag=" + uid;
 
+        OkHttpClient client = new OkHttpClient();
+
+
+        final Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("Api-Key", "0a39fd0363c04286b0959cc50d6b9120")
+                .build();
+
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(final Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String myResponse = response.body().string();
+
+                    Log.e("GEOFENCE",response.toString());
+
+                    OfficerPage.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            getGeoFenceCoords(myResponse);
+                        }
+                    });
+                }
+            }
+        });
+
+        String url2 = "https://api.geospark.co/v1/api/geofence/?tag=" + uid + "BP";
+
+        OkHttpClient client2 = new OkHttpClient();
+
+
+        final Request request2 = new Request.Builder()
+                .url(url2)
+                .get()
+                .addHeader("Api-Key", "0a39fd0363c04286b0959cc50d6b9120")
+                .build();
+
+
+        client2.newCall(request2).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(final Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String myResponse = response.body().string();
+
+                    Log.e("GEOFENCE",response.toString());
+
+                    OfficerPage.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            getBeatPoints(myResponse);
+                        }
+                    });
+                }
+            }
+        });
+
+
+    }
+
+    public ArrayList<ArrayList<Double>> getBeatPoints(String response){
+
+        ArrayList<ArrayList<Double>> BeatPoints = new ArrayList<ArrayList<Double>>();
+
+        if (TextUtils.isEmpty(response)) {
+            return null;
+        }
+
+        Log.e("RESPONSE!!!!",response);
+
+
+        // Try to parse the JSON response string. If there's a problem with the way the JSON
+        // is formatted, a JSONException exception object will be thrown.
+        // Catch the exception so the app doesn't crash, and print the error message to the logs.
+        try {
+
+            // Create a JSONObject from the JSON response string
+            JSONObject baseJsonResponse = new JSONObject(response);
+
+            JSONObject data = baseJsonResponse.getJSONObject("data");
+
+
+            JSONArray locations = data.getJSONArray("geofences");
+
+            for(int i=0; i<locations.length(); i++ ){
+                JSONObject currentObject = locations.getJSONObject(i);
+
+                JSONObject center = currentObject.getJSONObject("geometry_center");
+
+                JSONArray coordinates = center.getJSONArray("coordinates");
+
+                for(int j=0; j<coordinates.length(); j++){
+
+
+                    ArrayList<Double> coord = new ArrayList<Double>();
+
+
+                    coord.add((Double) coordinates.get(j));
+
+                    Log.e("ONE BP", coord.toString());
+
+
+                    BeatPoints.add(coord);
+
+                }
+
+
+            }
+
+        } catch (JSONException e) {
+            // If an error is thrown when executing any of the above statements in the "try" block,
+            // catch the exception here, so the app doesn't crash. Print a log message
+            // with the message from the exception.
+            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+        }
+        
+        BeatPointBundle = BeatPoints;
+        return BeatPoints;
+
+
+    }
+
+    public ArrayList<ArrayList<Double>> getGeoFenceCoords(String response){
+        ArrayList<ArrayList<Double>> geoFence = new ArrayList<ArrayList<Double>>();
+
+        if (TextUtils.isEmpty(response)) {
+            return null;
+        }
+
+        Log.e("RESPONSE",response);
+
+
+        // Try to parse the JSON response string. If there's a problem with the way the JSON
+        // is formatted, a JSONException exception object will be thrown.
+        // Catch the exception so the app doesn't crash, and print the error message to the logs.
+        try {
+
+            // Create a JSONObject from the JSON response string
+            JSONObject baseJsonResponse = new JSONObject(response);
+
+            JSONObject data = baseJsonResponse.getJSONObject("data");
+
+
+            JSONArray locations = data.getJSONArray("geofences");
+
+            JSONObject geofencedata = locations.getJSONObject(0);
+
+            JSONObject geometry = geofencedata.getJSONObject("geometry");
+
+            JSONArray coords = geometry.getJSONArray("coordinates");
+
+            JSONArray actualCoords = coords.getJSONArray(0);
+
+
+
+            for(int i=0; i<actualCoords.length(); i++){
+
+
+                ArrayList<Double> coord = new ArrayList<Double>();
+
+                JSONArray coordArray = actualCoords.getJSONArray(i);
+
+
+                for (int j= 0; j < coordArray.length(); j++) {
+                    coord.add((Double) coordArray.get(j));
+                }
+
+                geoFence.add(coord);
+
+            }
+
+
+        } catch (JSONException e) {
+            // If an error is thrown when executing any of the above statements in the "try" block,
+            // catch the exception here, so the app doesn't crash. Print a log message
+            // with the message from the exception.
+            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+        }
+
+        geofenceBundle = geoFence;
+        return geoFence;
     }
 
     public ArrayList<ArrayList<Double>> extractTripCoordsACTIVE(String response){
