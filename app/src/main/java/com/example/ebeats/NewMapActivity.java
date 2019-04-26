@@ -1,5 +1,6 @@
 package com.example.ebeats;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -48,6 +49,8 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
 
         PolygonOptions polygonOptions = new PolygonOptions().clickable(true);
         PolylineOptions polylineOptions = new PolylineOptions().clickable(true);
+        ArrayList<MarkerOptions> markerOptionsArrayList = new ArrayList<>();
+
         // Add a marker in Sydney and move the camera
         // LatLng sydney = new LatLng(-34, 151);
         // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -57,11 +60,14 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
         // Getting data from previous activity
         ArrayList<ArrayList<Double>> result = (ArrayList<ArrayList<Double>>) getIntent().getExtras().get("tripCoords");
         ArrayList<ArrayList<Double>> geofence = (ArrayList<ArrayList<Double>>) getIntent().getExtras().get("Geofence");
-        
+        // ArrayList<ArrayList<Double>> beatpoints = (ArrayList<ArrayList<Double>>) getIntent().getExtras().get("Beatpoints");
+
         ArrayList<LatLng> tripCoords = new ArrayList<>();
         ArrayList<LatLng> geofenceCoords = new ArrayList<>();
+        // ArrayList<LatLng> beatpointsCoords = new ArrayList<>();
         
         Iterator<ArrayList<Double>> iterator = result.iterator();
+        // Iterator<MarkerOptions> markerOptionsIterator = markerOptionsArrayList.iterator();
 
         while (iterator.hasNext()) {
             ArrayList<Double> next = iterator.next();
@@ -78,6 +84,17 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
             polygonOptions.add(new LatLng(coord.get(1), coord.get(0)));
         }
 
+//        for (ArrayList<Double> coord : beatpoints) {
+//            markerOptionsArrayList.add(new MarkerOptions().position(new LatLng(coord.get(1), coord.get(0))));
+//        }
+
+//        for (MarkerOptions markerOptions : markerOptionsArrayList) {
+//            mMap.addMarker(markerOptions.title("Beat point"));
+//        }
+        mMap.addMarker(new MarkerOptions().position(new LatLng(13.03030840075909, 77.6029266447944)).title("Beat point"));
+        mMap.addMarker(new MarkerOptions().position((new LatLng(13.053408375888093, 77.5785852620928))).title("Beat point"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(13.034607785852023, 77.54107900654324)).title("Beat point"));
+
         Log.e("TAG",tripCoords.toString());
 
         Log.d("GEOFENCE", "onMapReady: " + geofence.get(0));
@@ -87,9 +104,11 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
 //                new LatLng(-33.501, 150.217),
 //                new LatLng(-32.306, 149.248),
 //                new LatLng(-32.491, 147.309)
-        mMap.addPolyline(polylineOptions);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mMap.addPolyline(polylineOptions.color(getColor(R.color.green)));
+        }
 
-        mMap.addMarker(new MarkerOptions().position(tripCoords.get(tripCoords.size()-1)));
+        mMap.addMarker(new MarkerOptions().position(tripCoords.get(tripCoords.size()-1)).title("End point"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(tripCoords.get(tripCoords.size()-1)));
         CameraPosition campos=new CameraPosition.Builder()
             .target(tripCoords.get(tripCoords.size()-1))

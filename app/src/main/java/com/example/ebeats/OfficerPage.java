@@ -130,6 +130,7 @@ public class OfficerPage extends AppCompatActivity {
 
                 intent.putExtra("tripCoords", result);
                 intent.putExtra("Geofence", geofenceBundle);
+                intent.putExtra("Beatpoints", BeatPointBundle);
 
                 Log.e("COORDS", geofenceBundle.toString());
 
@@ -359,7 +360,7 @@ public class OfficerPage extends AppCompatActivity {
 
                     coord.add((Double) coordinates.get(j));
 
-                    Log.e("ONE BP", coord.toString());
+                    Log.e("ONEBP", coord.toString());
 
 
                     BeatPoints.add(coord);
@@ -375,11 +376,9 @@ public class OfficerPage extends AppCompatActivity {
             // with the message from the exception.
             Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
         }
-        
+
         BeatPointBundle = BeatPoints;
         return BeatPoints;
-
-
     }
 
     public ArrayList<ArrayList<Double>> getGeoFenceCoords(String response){
