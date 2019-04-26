@@ -1,5 +1,6 @@
 package com.example.ebeats;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -13,7 +14,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -34,6 +37,9 @@ public class OfficerPage extends AppCompatActivity {
     private TextView CoordTextView;
     private String name;
     private String uid;
+    private Button button;
+    private ArrayList<ArrayList<Double>> result = new ArrayList<ArrayList<Double>>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +54,13 @@ public class OfficerPage extends AppCompatActivity {
         FONameTextView = findViewById(R.id.FOName);
         StatusTextView = findViewById(R.id.status);
         CoordTextView = findViewById(R.id.coord);
+        button = findViewById(R.id.button);
 
         name = getIntent().getExtras().getString("USER");
         uid = getIntent().getExtras().getString("UID");
+
+
+
 
         FONameTextView.setText(name);
 
@@ -98,12 +108,34 @@ public class OfficerPage extends AppCompatActivity {
 
 
 
+
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(OfficerPage.this, NewMapActivity.class);
+
+                intent.putExtra("Coords", result);
+                Log.e("COORDS", result.toString());
+
+
+                if(result.size()==0){
+                    Toast toast = Toast.makeText(OfficerPage.this, "Officer is Inactive, and has no Past Trips",Toast.LENGTH_SHORT);
+                    toast.show();
+
+                } else {
+                    startActivity(intent);
+                }
+                // getSupportFragmentManager().beginTransaction().replace(R.id.linearlayout,new MapFragment()).commit();
             }
         });
 
@@ -216,8 +248,6 @@ public class OfficerPage extends AppCompatActivity {
         }
 
         Log.e("RESPONSE",response);
-
-        ArrayList<ArrayList<Double>> result = new ArrayList<ArrayList<Double>>();
 
 
         // Try to parse the JSON response string. If there's a problem with the way the JSON

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">EBeats</string>
     <string name="title_activity_officer_page">OfficerPage</string>
+    <string name="title_activity_new_map">Map</string>
 </resources>

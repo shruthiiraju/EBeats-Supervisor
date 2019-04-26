@@ -3,6 +3,8 @@
     package="com.example.ebeats">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -11,10 +13,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB8bz_KbsbgYlSj3QUaXbjPNxsEmu2KydM"/>
         <activity
             android:name=".OfficerPage"
             android:label="@string/title_activity_officer_page"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".NewMapActivity"
+            android:label="@string/title_activity_new_map"></activity>
         <activity android:name=".OfficerList">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,5 +34,8 @@
 
         </activity>
     </application>
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
 
 </manifest>
