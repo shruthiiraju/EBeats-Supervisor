@@ -23,6 +23,7 @@
         <activity
             android:name=".NewMapActivity"
             android:label="@string/title_activity_new_map"></activity>
+        <activity android:name=".ChatActivity" />
         <activity android:name=".OfficerList">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

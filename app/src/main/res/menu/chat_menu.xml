@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<item
+    android:title="Upload image"
+    android:id="@+id/image_upload"
+    app:showAsAction="ifRoom"
+    android:icon="@drawable/ic_camera_alt_black_24dp"
+    >
+
+
+</item>
+    <item android:title="View Images"
+        android:id="@+id/navigate"
+        android:icon="@color/cardview_dark_background"
+        >
+
+    </item>
+</menu>

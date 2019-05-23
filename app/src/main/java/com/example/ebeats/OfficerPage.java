@@ -118,8 +118,8 @@ public class OfficerPage extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(OfficerPage.this,ChatActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -350,22 +350,28 @@ public class OfficerPage extends AppCompatActivity {
 
                 JSONObject center = currentObject.getJSONObject("geometry_center");
 
-                JSONArray coordinates = center.getJSONArray("coordinates");
-
-                for(int j=0; j<coordinates.length(); j++){
-
-
-                    ArrayList<Double> coord = new ArrayList<Double>();
+                JSONArray coordinates;
+                try {
+                    coordinates = center.getJSONArray("coordinates");
+                    for(int j=0; j<coordinates.length(); j++){
 
 
-                    coord.add((Double) coordinates.get(j));
-
-                    Log.e("ONEBP", coord.toString());
+                        ArrayList<Double> coord = new ArrayList<Double>();
 
 
-                    BeatPoints.add(coord);
+                        coord.add((Double) coordinates.get(j));
 
+                        Log.e("ONEBP", coord.toString());
+
+
+                        BeatPoints.add(coord);
+
+                    }
+                } catch(JSONException e){
+                    BeatPoints = null;
                 }
+
+
 
 
             }

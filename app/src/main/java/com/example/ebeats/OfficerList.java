@@ -39,6 +39,7 @@ public class OfficerList extends AppCompatActivity {
         setContentView(R.layout.activity_officer_list);
 
         ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Field Officers");
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.rgb(95,176,201)));
         FirebaseUser user=mAuth.getCurrentUser();
         if(user==null)
