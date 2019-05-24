@@ -238,6 +238,7 @@ public class OfficerPage extends AppCompatActivity {
 
                                 ArrayList<ArrayList<Double>> coordinates = extractTripCoordsACTIVE(myResponse);
                                 tripp.setTripCoord(coordinates);
+                                Log.e("NEW LOCA",coordinates.toString());
                                 CoordTextView.setText(tripp.getTripCoord().toString());
                             }
                         });
@@ -467,12 +468,23 @@ public class OfficerPage extends AppCompatActivity {
             JSONObject data = baseJsonResponse.getJSONObject("data");
 
             JSONArray locations = data.getJSONArray("locations");
+            Log.e("NO LOCA", locations.toString());
 
             for(int i=0; i<locations.length(); i++){
 
                 JSONObject currentObject = locations.getJSONObject(i);
-                JSONObject coordObj  = currentObject.getJSONObject("coordinates");
-                JSONArray coordArray = coordObj.getJSONArray("coordinates");
+                JSONObject coordObj;
+                JSONArray coordArray = new JSONArray();
+
+                try {
+                    coordObj = currentObject.getJSONObject("coordinates");
+                    coordArray = coordObj.getJSONArray("coordinates");
+                }
+                catch(Exception e){
+
+                }
+
+                Log.e("NEWWW LOCA", coordArray.toString());
 
                 ArrayList<Double> coord = new ArrayList<Double>();
 

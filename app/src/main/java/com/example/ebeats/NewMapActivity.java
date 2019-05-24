@@ -63,6 +63,7 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
             // Getting data from previous activity
             ArrayList<ArrayList<Double>> result = (ArrayList<ArrayList<Double>>) getIntent().getExtras().get("tripCoords");
             ArrayList<ArrayList<Double>> geofence = (ArrayList<ArrayList<Double>>) getIntent().getExtras().get("Geofence");
+            Log.e("GEO",geofence.toString());
             // ArrayList<ArrayList<Double>> beatpoints = (ArrayList<ArrayList<Double>>) getIntent().getExtras().get("Beatpoints");
 
             ArrayList<LatLng> tripCoords = new ArrayList<>();
@@ -75,8 +76,13 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
             while (iterator.hasNext()) {
                 ArrayList<Double> next = iterator.next();
                 //Log.d("main",next.get(1)+" "+next.get(0));
-                tripCoords.add(new LatLng(next.get(1), next.get(0)));
-                polylineOptions.add(new LatLng(next.get(1), next.get(0)));
+                try {
+                    tripCoords.add(new LatLng(next.get(1), next.get(0)));
+                    polylineOptions.add(new LatLng(next.get(1), next.get(0)));
+                }
+                catch (Exception e){
+                    
+                }
             }
 
             if (geofence == null) {
@@ -84,6 +90,7 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
             }
 
             for (ArrayList<Double> coord : geofence) {
+                Log.e("CURRENT coord", coord.toString());
                 polygonOptions.add(new LatLng(coord.get(1), coord.get(0)));
             }
 
@@ -100,7 +107,7 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
 
             Log.e("TAG", tripCoords.toString());
 
-            Log.d("GEOFENCE", "onMapReady: " + geofence.get(0));
+            Log.e("GEOFENCEEEEEEE", "onMapReady: " + geofence.get(0));
 //                new LatLng(-35.016, 143.321),
 //                new LatLng(-34.747, 145.592),
 //                new LatLng(-34.364, 147.891),
@@ -126,6 +133,7 @@ public class NewMapActivity extends FragmentActivity implements OnMapReadyCallba
         }
         catch (Exception e){
             Toast toast = Toast.makeText(NewMapActivity.this, "No geofence",Toast.LENGTH_SHORT);
+            Log.e("ERROR",e.toString());
             toast.show();
         }
     }
